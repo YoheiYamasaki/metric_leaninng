@@ -226,14 +226,14 @@ def train(model, data_loader, data_loader_test, num_epochs=50, device="cpu"):
 
             train_loss += loss.to("cpu").item()
             batch_count += 1
-            print(f"\n== iterate : {current_iterate}, loss : {loss.to("cpu").item()} ==")
+            print(f"\n== iterate : {current_iterate}, loss : {loss.to('cpu').item()} ==")
 
         for img, mask in data_loader_test:
             model.eval()
             with torch.no_grad():
                 output = model(img)
                 loss = criterion(output, mask)
-                val_loss += loss.item()
+                val_loss += loss.to("cpu").item()
 
 def main():
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
