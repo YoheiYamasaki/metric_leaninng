@@ -162,10 +162,10 @@ class MetricLoss(nn.Module):
             masked_embedding = torch.t(embedding[: , mask_boolen]).contiguous()
             masked_embedding_num = len(masked_embedding)
             cluster_mean = torch.mean(masked_embedding, axis=0) # 次元embedding_dとなるクラスタの中心ベクトル
-            print(f"-- cluster_mean : {cluster_mean} --")
+            # print(f"-- cluster_mean : {cluster_mean} --")
 
             mean_difference_vectors = torch.norm((cluster_mean - masked_embedding) , dim=1) - self.variance_theta
-            print(f"-- {mean_difference_vectors=} --")
+            # print(f"-- {mean_difference_vectors=} --")
 
             cluster_loss = torch.sum(torch.clamp(mean_difference_vectors, min=0.0) ** 2) / masked_embedding_num
             variance_loss += cluster_loss
@@ -187,8 +187,6 @@ class MetricLoss(nn.Module):
             for cluster_b_idx in range(cluster_a_idx+1, cluster_num):
                 cluster_mean_a = cluster_means[cluster_a_idx]
                 cluster_mean_b = cluster_means[cluster_b_idx]
-                # print("-- cluster_mean_a, cluster_mean_b --")
-                # print(cluster_mean_a, cluster_mean_b)
                 tmp_loss = 2 * self.distance_theta - torch.norm(cluster_mean_b - cluster_mean_a)
                 distance_loss += torch.clamp(tmp_loss, min=0.0) ** 2
         return distance_loss / (cluster_num * (cluster_num - 1))
