@@ -206,11 +206,14 @@ def train(model, data_loader, data_loader_test, num_epochs=50, device="cpu"):
                                                    gamma=0.1)
 
     for epoch in range(num_epochs):
+        model.train()
         train_loss = 0
         val_loss = 0
         batch_count = 0
         # train for one epoch, printing every 10 iterations
         for i, (img, mask) in enumerate(data_loader):
+            img = img.to(device)
+            mask = mask.to(device)
             current_iterate = len(data_loader) * epoch + i
             print("- data loaded - ")
             # update the learning rate
@@ -221,13 +224,13 @@ def train(model, data_loader, data_loader_test, num_epochs=50, device="cpu"):
             optimizer.step()
             lr_scheduler.step()
 
-            train_loss += loss.item()
+            train_loss += loss.to("cpu").item()
             batch_count += 1
-            print(f"\n== iterate : {current_iterate}, loss : {loss.item()} ==")
+            print(f"\n== iterate : {current_iterate}, loss : {loss.to("cpu").item()} ==")
 
         for img, mask in data_loader_test:
-            with model.no_grad():
-                model.eval()
+            model.eval()
+            with torch.no_grad():
                 output = model(img)
                 loss = criterion(output, mask)
                 val_loss += loss.item()
